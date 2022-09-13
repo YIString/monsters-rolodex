@@ -1,19 +1,32 @@
 // import { Component } from 'react'
 // import logo from './logo.svg'
-import { useState, useEffect } from 'react'
+import { useState, useEffect,ChangeEvent } from 'react'
 import CardList from './components/card-list/card-list-component'
 import SearchBox from './components/search-box/search-box-component'
 import './App.css'
+import { getData } from './utils/data.utils'
+
+export type Monster = {
+  id: string
+  name: string
+  email: string
+}
 
 const App = () => {
-  console.log('render')
   const [searchField, setSearchField] = useState('')
-  const [monsters, setMonsters] = useState([])
+  const [monsters, setMonsters] = useState<Monster[]>([])
   const [filterMonster, setFilterMonster] = useState(monsters)
   useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then((response) => response.json())
-      .then((users) => setMonsters(users))
+    // fetch('https://jsonplaceholder.typicode.com/users')
+    //   .then((response) => response.json())
+    //   .then((users) => setMonsters(users))
+    const fetchUser = async () => {
+      const users = await getData<Monster[]>(
+        'https://jsonplaceholder.typicode.com/users'
+      )
+        setMonsters(users)
+    }
+    fetchUser()
   }, [])
 
   useEffect(() => {
@@ -22,7 +35,7 @@ const App = () => {
     })
     setFilterMonster(filterMonsterString)
   }, [monsters, searchField])
-  const onSearchChange = (event) => {
+  const onSearchChange = (event:ChangeEvent<HTMLInputElement>) => {
     const searchFieldString = event.target.value.toLowerCase()
     setSearchField(searchFieldString)
   }
